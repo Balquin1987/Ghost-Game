@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hearthbound: Spirit Keepers</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --ink: #f5f0e6;
+            --muted: #b9b5c9;
+            --panel: rgba(27, 27, 48, .94);
+            --line: rgba(255,255,255,.13);
+            --gold: #ffd782;
+            --mint: #94f0ce;
+            --purple: #bda3ff;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; color: var(--ink); font-family: Inter, ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(ellipse at top, #403365 0, #201d39 42%, #111523 100%); }
+        button { font: inherit; }
+        .shell { width: min(1160px, 100%); margin: auto; padding: 28px 22px 42px; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+        .brand { display: flex; align-items: center; gap: 13px; }
+        .brand-mark { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #ffffff30; border-radius: 16px; background: #ffffff10; font-size: 27px; }
+        h1 { margin: 0; font-size: clamp(1.25rem, 3vw, 1.8rem); letter-spacing: -.04em; }
+        .subtitle { margin: 3px 0 0; color: var(--muted); font-size: .9rem; }
+        .chapter { color: var(--gold); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 18px; align-items: start; }
+        .panel { border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: 0 18px 50px #08091650; overflow: hidden; }
+        .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 17px 20px; border-bottom: 1px solid var(--line); }
+        .panel-heading h2 { margin: 0; font-size: 1rem; }
+        .badge { border: 1px solid #ffffff22; border-radius: 999px; padding: 5px 9px; color: var(--mint); font-size: .72rem; font-weight: 700; }
+        .scene-wrap { padding: 18px; }
+        .scene { position: relative; width: 100%; aspect-ratio: 1.62; min-height: 300px; overflow: hidden; border: 3px solid #6c536c; border-radius: 12px; background-color: #866d66; background-image: linear-gradient(#ffffff09 1px, transparent 1px), linear-gradient(90deg, #ffffff09 1px, transparent 1px); background-size: 10% 14.28%; }
+        .room-label { position: absolute; z-index: 2; top: 9px; left: 12px; color: #fff9; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-shadow: 0 1px 3px #000; }
+        .rug { position: absolute; left: 31%; top: 31%; width: 39%; height: 39%; border: 3px solid #d5a56a; border-radius: 14px; background: #a86167; box-shadow: inset 0 0 0 5px #ffffff16; }
+        .object { position: absolute; z-index: 2; display: grid; place-items: center; border: 2px solid #ffffff38; border-radius: 9px; box-shadow: 0 5px 10px #0004; font-size: clamp(20px, 4vw, 36px); cursor: default; }
+        .bed { top: 8%; left: 8%; width: 18%; height: 25%; background: #536d89; }
+        .shelf { top: 8%; right: 8%; width: 22%; height: 16%; background: #754c3f; }
+        .fireplace { bottom: 7%; left: 7%; width: 21%; height: 18%; background: #69463d; }
+        .plant { bottom: 8%; right: 8%; width: 13%; height: 18%; background: #42715a; }
+        .window { top: 0; left: 43%; width: 17%; height: 7%; border: 0; border-radius: 0 0 8px 8px; background: #94d4e7; }
+        .door { right: 0; top: 40%; width: 6%; height: 23%; border: 2px solid #d8b36e; border-right: 0; border-radius: 8px 0 0 8px; background: #704a3a; }
+        .actor { position: absolute; z-index: 4; display: grid; place-items: center; width: 8%; height: 12%; min-width: 34px; min-height: 36px; transform: translate(-50%, -50%); transition: left .14s, top .14s; border-radius: 40%; font-size: clamp(22px, 4vw, 35px); filter: drop-shadow(0 3px 2px #0008); }
+        .player { z-index: 5; }
+        .wild-ghost { z-index: 3; background: transparent; color: inherit; cursor: default; opacity: .86; transition: left .1s linear, top .1s linear, opacity .2s; animation: ghost-float 1.8s ease-in-out infinite alternate; }
+        .wild-ghost:hover { opacity: 1; filter: drop-shadow(0 0 10px #d8c4ff); }
+        @keyframes ghost-float { from { margin-top: -3px; } to { margin-top: 4px; } }
+        .companion { margin-left: -23px; margin-top: 13px; opacity: .88; }
+        .controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 0 19px 17px; color: var(--muted); font-size: .82rem; }
+        kbd { padding: 3px 6px; border: 1px solid #ffffff2c; border-radius: 5px; background: #ffffff0b; color: var(--ink); font: inherit; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 19px 19px; }
+        .btn { padding: 10px 13px; border: 1px solid #ffffff2a; border-radius: 10px; background: #ffffff0d; color: var(--ink); cursor: pointer; font-weight: 750; transition: transform .15s, background .15s; }
+        .btn:hover { transform: translateY(-1px); background: #ffffff19; }
+        .btn.primary { border-color: transparent; background: linear-gradient(120deg, #bb91ff, #8c76e9); color: #17142b; }
+        .btn:disabled { cursor: not-allowed; opacity: .45; transform: none; }
+        .side { display: grid; gap: 18px; }
+        .spirit-card { padding: 20px; }
+        .spirit-top { display: flex; gap: 13px; align-items: center; }
+        .spirit-avatar { display: grid; place-items: center; flex: 0 0 58px; height: 58px; border-radius: 18px; background: linear-gradient(145deg, #a98bff55, #79efd055); font-size: 35px; }
+        .spirit-card h2 { margin: 0; font-size: 1.05rem; }
+        .spirit-type { margin-top: 4px; color: var(--muted); font-size: .8rem; }
+        .stat { margin-top: 18px; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 6px; color: var(--muted); font-size: .78rem; }
+        .meter { height: 8px; overflow: hidden; border-radius: 10px; background: #ffffff12; }
+        .meter span { display: block; height: 100%; width: 100%; border-radius: inherit; background: linear-gradient(90deg, #80e1bd, #c2f3c8); transition: width .2s; }
+        .meter.hp span { background: linear-gradient(90deg, #ff7b91, #ffc080); }
+        .world-note { padding: 14px 18px; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+        .world-note strong { color: var(--ink); }
+        .overlay { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 20px; background: #10101bcc; backdrop-filter: blur(9px); }
+        .modal { width: min(740px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; padding: 25px; border: 1px solid #ffffff24; border-radius: 22px; background: #24223a; box-shadow: 0 25px 90px #0009; }
+        .modal h2 { margin: 0 0 7px; font-size: 1.55rem; }
+        .modal > p { margin: 0 0 20px; color: var(--muted); line-height: 1.5; }
+        .starter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .starter { min-height: 190px; padding: 17px; border: 1px solid #ffffff24; border-radius: 16px; background: #ffffff08; color: var(--ink); text-align: left; cursor: pointer; }
+        .starter:hover { border-color: var(--mint); background: #ffffff12; }
+        .starter .emoji { display: block; margin-bottom: 11px; font-size: 40px; }
+        .sprite-art { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .starter .sprite-art { width: 64px; height: 64px; }
+        .spirit-avatar .sprite-art { width: 80%; height: 80%; }
+        .character-art { position: relative; display: block; width: 100%; height: 100%; overflow: visible; }
+        .character-slot .character-art { width: 64px; height: 64px; }
+        .spirit-avatar .character-art { width: 80%; height: 80%; }
+        .spirit-character { --spirit-color: #d9d1ff; --spirit-shadow: #9581d7; }
+        .spirit-character.kindling { --spirit-color: #e4d7ff; --spirit-shadow: #a78be8; }
+        .spirit-character.ember { --spirit-color: #ffb879; --spirit-shadow: #e36b47; }
+        .spirit-character.tide { --spirit-color: #9beaff; --spirit-shadow: #4baaca; }
+        .spirit-character.moss { --spirit-color: #a7e58c; --spirit-shadow: #5e9a50; }
+        .spirit-character.bat { --spirit-color: #b8a2ee; --spirit-shadow: #675293; }
+        .spirit-body { position: absolute; z-index: 2; left: 18%; top: 18%; width: 64%; height: 69%; border: 2px solid #fff9; border-radius: 48% 48% 42% 42%; background: radial-gradient(ellipse at 35% 25%, #fff 0 5%, var(--spirit-color) 34%, var(--spirit-shadow) 100%); box-shadow: 0 4px 12px #0005, 0 0 12px var(--spirit-color); animation: spirit-hover 1.8s ease-in-out infinite alternate; }
+        .spirit-body::after { position: absolute; right: 8%; bottom: -5%; left: 8%; height: 28%; border-radius: 0 0 50% 50%; background: linear-gradient(135deg, transparent 30%, var(--spirit-color) 32% 60%, transparent 62%), linear-gradient(45deg, transparent 30%, var(--spirit-color) 32% 60%, transparent 62%); content: ""; }
+        .spirit-eye { position: absolute; z-index: 3; top: 43%; width: 8%; height: 13%; border-radius: 50%; background: #302642; animation: blink 4s infinite; }
+        .spirit-eye.left { left: 38%; } .spirit-eye.right { right: 38%; }
+        .spirit-mouth { position: absolute; z-index: 3; top: 59%; left: 47%; width: 7%; height: 5%; border-bottom: 2px solid #453650; border-radius: 50%; }
+        .bat-wing { position: absolute; z-index: 1; top: 34%; width: 42%; height: 36%; background: var(--spirit-shadow); border: 2px solid #ffffff99; animation: wing-flap .38s ease-in-out infinite alternate; }
+        .bat-wing.left { left: -3%; clip-path: polygon(100% 15%, 74% 47%, 42% 10%, 42% 58%, 4% 37%, 22% 100%, 100% 100%); transform-origin: right center; }
+        .bat-wing.right { right: -3%; clip-path: polygon(0 15%, 26% 47%, 58% 10%, 58% 58%, 96% 37%, 78% 100%, 0 100%); transform-origin: left center; animation-delay: .08s; }
+        .person-art { width: 100%; height: 100%; animation: person-idle 1.8s ease-in-out infinite alternate; }
+        .person-art .person-body { z-index: 3; }
+        /* A readable side-on trainer with a different pose for each battle action. */
+        #battle-player .person-art { animation: none; }
+        #battle-player .person-head { top: 7%; left: 38%; width: 38%; height: 31%; border-radius: 48% 44% 42% 46%; }
+        #battle-player .person-head::before { top: -9%; left: -5%; width: 108%; height: 38%; border-radius: 55% 55% 22% 18%; }
+        #battle-player .person-eye.right { display: none; }
+        #battle-player .person-body { top: 38%; left: 34%; width: 43%; height: 38%; border-radius: 25% 30% 12% 12%; }
+        #battle-player .person-body::after { left: 58%; width: 8%; }
+        #battle-player .person-arm { top: 42%; width: 20%; height: 34%; }
+        #battle-player .person-arm.left { left: 23%; transform: rotate(18deg); }
+        #battle-player .person-arm.right { right: 4%; transform: rotate(-22deg); }
+        #battle-player .person-leg { top: 70%; width: 23%; height: 23%; }
+        #battle-player .person-leg.left { left: 34%; }
+        #battle-player .person-leg.right { right: 17%; }
+        #battle-player.walking .person-arm.left { animation: trainer-arm-swing .24s ease-in-out infinite alternate; }
+        #battle-player.walking .person-arm.right { animation: trainer-arm-swing .24s ease-in-out infinite alternate-reverse; }
+        #battle-player.walking .person-leg.left { animation: trainer-leg-step .24s ease-in-out infinite alternate; }
+        #battle-player.walking .person-leg.right { animation: trainer-leg-step .24s ease-in-out infinite alternate-reverse; }
+        #battle-player.jumping .person-art { animation: trainer-jump .22s ease-in-out infinite alternate; }
+        #battle-player.jumping .person-arm { top: 30%; }
+        #battle-player.dashing .person-art { animation: trainer-dash .18s ease-in-out infinite alternate; }
+        #battle-player.dashing .person-head { top: 13%; }
+        #battle-player.dashing .person-arm.right { top: 47%; transform: rotate(-55deg); }
+        #battle-player.crouching .person-head { top: 23%; left: 41%; }
+        #battle-player.crouching .person-body { top: 48%; left: 31%; width: 48%; height: 28%; transform: rotate(-12deg); }
+        #battle-player.crouching .person-arm { top: 48%; }
+        #battle-player.commanding .person-arm.right { top: 42%; right: -1%; height: 15%; transform: rotate(-8deg); }
+        #battle-player.commanding .person-arm.right::after { position: absolute; top: 15%; right: -18%; width: 34%; height: 55%; border-radius: 50%; background: #f2c49e; content: ""; }
+        @keyframes trainer-arm-swing { to { transform: rotate(25deg); } }
+        @keyframes trainer-leg-step { to { transform: translateY(-3px) rotate(12deg); } }
+        @keyframes trainer-jump { to { transform: translateY(-3px) rotate(-4deg); } }
+        @keyframes trainer-dash { to { transform: translateX(2px) skewX(-8deg); } }
+        .person-art .person-body { z-index: 3; }
+        
+        .person-art .person-head { z-index: 4; }
+        .person-art .person-head { z-index: 4; }
+        .person-head { position: absolute; top: 4%; left: 31%; width: 38%; height: 34%; border: 2px solid #70452f; border-radius: 46% 46% 44% 44%; background: #f2c49e; box-shadow: inset 0 -4px #d99c76; }
+        .person-head::before { position: absolute; top: -9%; left: -7%; width: 114%; height: 42%; border-radius: 55% 55% 25% 20%; background: #49342f; content: ""; }
+        .person-eye { position: absolute; top: 51%; width: 12%; height: 15%; border-radius: 50%; background: #30242a; animation: blink 4s infinite; }
+        .person-eye.left { left: 23%; } .person-eye.right { right: 23%; }
+        .person-body { position: absolute; top: 39%; left: 22%; width: 56%; height: 39%; border: 2px solid #40563c; border-radius: 28% 28% 14% 14%; background: linear-gradient(90deg, #456342, #91ad70 50%, #456342); box-shadow: inset 0 -5px #394b3c; }
+        .person-body::after { position: absolute; top: 13%; left: 47%; width: 6%; height: 70%; border-radius: 5px; background: #d6c497; content: ""; }
+        .person-arm { position: absolute; z-index: 2; top: 43%; width: 18%; height: 37%; border: 2px solid #70452f; border-radius: 10px 10px 12px 12px; background: linear-gradient(90deg, #d99c76, #f2c49e); }
+        .person-arm.left { left: 8%; transform: rotate(12deg); } .person-arm.right { right: 8%; transform: rotate(-12deg); }
+        .person-leg { position: absolute; z-index: 2; top: 72%; width: 21%; height: 22%; border-radius: 4px 4px 7px 7px; background: linear-gradient(90deg, #3b3c58, #626585); }
+        .person-leg.left { left: 27%; } .person-leg.right { right: 27%; }
+        .person-leg::after { position: absolute; right: -8%; bottom: -5%; left: -8%; height: 24%; border-radius: 5px 5px 7px 7px; background: #302b32; content: ""; }
+        @keyframes blink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.08); } }
+        @keyframes spirit-hover { to { transform: translateY(-4px) rotate(2deg); } }
+        @keyframes wing-flap { to { transform: scaleX(.72) rotate(8deg); } }
+        @keyframes person-idle { to { transform: translateY(-2px); } }
+        .starter strong { display: block; font-size: 1rem; }
+        .starter small { display: block; margin-top: 7px; color: var(--muted); line-height: 1.4; }
+        .room-view { position: relative; min-height: 250px; overflow: hidden; margin: 16px 0; border: 2px solid #75658c; border-radius: 15px; background: linear-gradient(#555478 0 48%, #886b67 48%); }
+        .room-window { position: absolute; top: 10%; left: 42%; width: 17%; height: 25%; border: 5px solid #d8c7a1; border-radius: 10px; background: linear-gradient(#20294e 0 55%, #b6d9df 56%); box-shadow: 0 0 22px #c7d7ff55; }
+        .room-bed { position: absolute; bottom: 10%; left: 8%; width: 33%; height: 35%; border: 4px solid #d7b889; border-radius: 12px 12px 5px 5px; background: linear-gradient(#e2c8ad 0 25%, #64799b 26%); box-shadow: inset 0 -8px #4e5f7c; }
+        .room-rug { position: absolute; right: 10%; bottom: 8%; width: 38%; height: 30%; border: 3px solid #dbad76; border-radius: 50%; background: #a86167; }
+        .room-lamp { position: absolute; right: 15%; top: 15%; font-size: 38px; }
+        .room-actor { position: absolute; z-index: 2; bottom: 24%; font-size: clamp(32px, 7vw, 52px); filter: drop-shadow(0 4px 3px #0008); }
+        .room-player { left: 48%; }
+        .room-companion { left: 62%; bottom: 27%; animation: ghost-float 1.8s ease-in-out infinite alternate; }
+        .room-caption { position: absolute; top: 10px; left: 12px; color: #fff; font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-shadow: 0 1px 3px #000; }
+        #game-toast, .room-toast { position: absolute; z-index: 6; right: 10px; bottom: 10px; left: 10px; padding: 8px 11px; border: 1px solid #ffffff2a; border-radius: 9px; background: #171627dc; color: var(--gold); font-size: .78rem; line-height: 1.35; text-align: center; pointer-events: none; }
+        .battle { width: min(1100px, 100%); padding: 20px; }
+        .battle-field { position: relative; height: clamp(300px, 53vh, 440px); overflow: hidden; margin: 17px 0 10px; border: 1px solid #ffffff20; border-radius: 14px; background: #38344e; }
+        .battle-world { position: absolute; inset: 0 auto 0 0; width: 300%; height: 100%; overflow: hidden; background: linear-gradient(#38344e 0 66%, #70624e 66%); transition: left .08s linear; }
+        .battle-world::after { position: absolute; right: 0; bottom: 31%; left: 0; height: 2px; background: #d2b88a66; content: ""; }
+        .battle-toast { position: absolute; z-index: 7; right: 12px; bottom: 12px; left: 12px; margin: 0; padding: 9px 12px; border: 1px solid #ffffff2a; border-radius: 10px; background: #171627dc; color: var(--gold); font-size: .82rem; line-height: 1.4; text-align: center; pointer-events: none; }
+        .enemy-direction { position: absolute; z-index: 8; top: 50%; display: none; transform: translateY(-50%); padding: 6px 9px; border: 1px solid #ffd782aa; border-radius: 999px; background: #171627e8; color: var(--gold); font-size: .8rem; font-weight: 800; pointer-events: none; }
+        .enemy-direction.visible { display: block; }
+        .enemy-direction.left { left: 8px; }
+        .enemy-direction.right { right: 8px; }
+        .battle-actor { position: absolute; z-index: 2; bottom: 34%; display: grid; place-items: center; width: 46px; height: 60px; font-size: 40px; filter: drop-shadow(0 4px 2px #0008); transition: left .1s linear, bottom .1s linear; }
+        .battle-player { left: 14%; transform: scaleX(-1); }
+        .battle-companion { left: 7%; bottom: 33%; width: 34px; height: 44px; font-size: 29px; opacity: .9; }
+        .battle-companion.tackling { transition: transform .16s ease-in-out; }
+        .battle-enemy { left: 76%; right: auto; bottom: 48%; animation: none; }
+        @media (max-width: 520px) { .battle-actor { width: 38px; height: 50px; font-size: 34px; } .battle-companion { width: 29px; height: 38px; font-size: 25px; } }
+        .battle-actor.crouching { height: 48px; }
+        .battle-actor.dashing { filter: drop-shadow(0 0 12px #bda3ff); }
+        .battle-actor.attacking { animation: spirit-strike .35s ease-out; }
+        @keyframes spirit-strike { 50% { transform: translateX(34px) scale(1.15); } }
+        .attack-warning { position: absolute; z-index: 1; right: 7%; bottom: 29%; width: 42%; height: 12%; border: 2px solid #ff8290; border-radius: 50%; background: #ff536333; opacity: 0; }
+        .attack-warning.active { opacity: 1; animation: warning-pulse .35s infinite alternate; }
+        @keyframes warning-pulse { to { background: #ff536377; } }
+        .enemy-projectile { position: absolute; z-index: 4; display: grid; place-items: center; width: 19px; height: 19px; transform: translate(-50%, 50%); border: 1px solid #fff9; border-radius: 50%; background: radial-gradient(circle, #fff 0, #ffd782 25%, #ff6c8b 75%); box-shadow: 0 0 8px 3px #ff668dbb; font-size: 12px; pointer-events: none; }
+        .ghost-projectile { position: absolute; z-index: 5; display: grid; place-items: center; width: 34px; height: 34px; transform: translate(-50%, -50%); font-size: 26px; filter: drop-shadow(0 0 8px #fff); pointer-events: none; animation: ghost-projectile-flight .45s cubic-bezier(.2,.7,.35,1) forwards; }
+        .ghost-projectile.bullet { width: 14px; height: 14px; border: 1px solid #ffffffcc; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, var(--shot-color, #bda3ff) 35%, color-mix(in srgb, var(--shot-color, #bda3ff) 65%, transparent) 100%); box-shadow: 0 0 10px 3px var(--shot-color, #bda3ff); font-size: 0; }
+        .ghost-projectile.special { width: 46px; height: 46px; font-size: 36px; filter: drop-shadow(0 0 14px #ffd782); }
+        .ghost-projectile.kindling { filter: drop-shadow(0 0 9px #bda3ff); }
+        .ghost-projectile.ember { filter: drop-shadow(0 0 9px #ff9a68); }
+        .ghost-projectile.tide { filter: drop-shadow(0 0 9px #7ee9ff); }
+        @keyframes ghost-projectile-flight { to { transform: translate(calc(-50% + var(--travel-x)), calc(-50% + var(--travel-y))) scale(.45); opacity: .15; } }
+        .ghost-impact { position: absolute; z-index: 6; pointer-events: none; font-size: 32px; animation: ghost-impact-pop .35s ease-out forwards; }
+        @keyframes ghost-impact-pop { from { opacity: 1; transform: translate(-50%, -50%) scale(.35); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.35); } }
+        .battle-hud { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .battle-hud .fighter-name { font-size: .82rem; }
+        .battle-hp { margin: 6px 0 0; }
+        .battle-controls { margin: 0 0 13px; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+        .battle-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .hidden { display: none !important; }
+        @media (max-width: 780px) { .layout { grid-template-columns: 1fr; } .side { grid-template-columns: 1fr 1fr; } .scene { min-height: 260px; } }
+        @media (max-width: 520px) { .shell { padding: 18px 12px 30px; } header { align-items: flex-start; } .chapter { font-size: .65rem; text-align: right; } .side { grid-template-columns: 1fr; } .scene-wrap { padding: 10px; } .scene { min-height: 245px; } .starter-grid { grid-template-columns: 1fr; } .starter { min-height: 0; display: grid; grid-template-columns: 48px 1fr; column-gap: 12px; align-items: center; } .starter .emoji { grid-row: span 2; margin: 0; } .starter small { margin-top: 3px; } }
+        @media (max-width: 520px) { .overlay { padding: 10px; } .modal { padding: 18px; max-height: calc(100dvh - 20px); } }
+        @media (max-height: 560px) { .overlay { align-items: start; } .modal { max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); } .battle-field { height: 220px; margin-top: 10px; } }
+
+        /* Game scenes fill the screen; HUD and controls float above the world. */
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        body { background: #171629; }
+        .shell { width: 100%; height: 100%; padding: 0; }
+        header { position: fixed; z-index: 5; top: 14px; left: 18px; right: 18px; margin: 0; pointer-events: none; }
+        header .brand, header .chapter { pointer-events: auto; }
+        .brand-mark { width: 40px; height: 40px; }
+        .subtitle { display: none; }
+        .layout { display: block; }
+        .layout > section.panel { position: static; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+        .layout > section.panel > .panel-heading { position: fixed; z-index: 5; top: 68px; left: 18px; padding: 8px 0; border: 0; }
+        .scene-wrap { padding: 0; }
+        .scene { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; min-height: 0; aspect-ratio: auto; border: 0; border-radius: 0; background-size: 7% 10%; }
+        .room-label { top: 120px; left: 20px; }
+        .controls { position: fixed; z-index: 5; left: 18px; bottom: 82px; padding: 0; text-shadow: 0 2px 5px #000; }
+        .actions#explore-actions { position: fixed; z-index: 5; bottom: 16px; left: 18px; padding: 0; }
+        .side { position: fixed; z-index: 6; top: 14px; right: 18px; width: min(280px, 36vw); gap: 10px; }
+        .spirit-card { padding: 12px; border-color: #ffffff26; background: #17162755; box-shadow: none; backdrop-filter: blur(5px); }
+        .spirit-card .panel-heading { padding: 0 0 8px !important; }
+        .side > .panel:last-child { padding: 8px 12px; background: #17162755; box-shadow: none; backdrop-filter: blur(5px); }
+        .world-note { padding: 4px 0; }
+        #game-toast, .room-toast, .battle-toast { border: 0; background: transparent; text-shadow: 0 2px 5px #000, 0 0 10px #000; }
+        .overlay { z-index: 20; padding: 0; overflow: hidden; background: #10101b; backdrop-filter: none; }
+        .modal { width: 100%; height: 100%; max-height: none; padding: 24px; overflow: auto; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+        #starter-overlay { z-index: 40; padding: 20px; background: #10101bcc; backdrop-filter: blur(9px); }
+        #starter-overlay .modal { width: min(740px, 100%); height: auto; max-height: calc(100dvh - 40px); padding: 25px; border: 1px solid #ffffff24; border-radius: 22px; background: #24223a; box-shadow: 0 25px 90px #0009; }
+        #room-overlay { z-index: 25; }
+        .room-overlay .modal { position: relative; }
+        #room-overlay .modal { position: relative; }
+        #room-overlay .modal > .chapter, #room-overlay .modal > h2, #room-overlay .modal > p { position: relative; z-index: 3; }
+        .room-view { position: absolute; inset: 0; min-height: 0; margin: 0; border: 0; border-radius: 0; }
+        #room-overlay .actions { position: absolute; z-index: 4; bottom: 20px; left: 20px; }
+        #room-overlay .room-caption { top: 92px; }
+        .battle { position: relative; width: 100%; height: 100%; padding: 0; overflow: hidden; }
+        .battle > .chapter, .battle > h2 { position: absolute; z-index: 4; top: 18px; left: 20px; margin: 0; text-shadow: 0 2px 6px #000; }
+        .battle > h2 { top: 42px; }
+        .battle-field { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; margin: 0; border: 0; border-radius: 0; }
+        .battle-world { transition: left .2s ease-out; }
+        .battle-actor { transition: left .16s ease-out, bottom .16s ease-out; }
+        .battle-hud { position: absolute; z-index: 5; top: 18px; right: 20px; width: min(380px, 45vw); padding: 12px; border: 1px solid #ffffff20; border-radius: 12px; background: #17162755; backdrop-filter: blur(5px); }
+        .battle-controls { position: absolute; z-index: 5; bottom: 76px; left: 20px; margin: 0; text-shadow: 0 2px 5px #000; }
+        .battle-actions { position: absolute; z-index: 5; bottom: 18px; left: 20px; }
+        .battle-toast { right: auto; bottom: auto; top: 50%; left: 50%; width: min(620px, 80vw); transform: translate(-50%, -50%); }
+        .enemy-direction { position: fixed; }
+        @media (max-width: 650px) {
+            header { top: 10px; left: 12px; right: 12px; }
+            header .chapter { font-size: .6rem; }
+            .layout > section.panel > .panel-heading { top: 58px; left: 12px; }
+            .side { top: 10px; right: 12px; width: min(190px, 48vw); }
+            .side > .panel:last-child { display: none; }
+            .controls { bottom: 78px; left: 12px; font-size: .7rem; }
+            .actions#explore-actions, #room-overlay .actions { bottom: 12px; left: 12px; }
+            .btn { padding: 8px 10px; font-size: .78rem; }
+            .battle-hud { top: 90px; right: 12px; width: min(260px, 54vw); }
+            .battle-controls { bottom: 68px; left: 12px; font-size: .68rem; }
+            .battle-actions { right: 10px; bottom: 10px; left: 10px; gap: 5px; }
+            .battle > .chapter, .battle > h2 { left: 12px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <header>
+            <div class="brand"><div class="brand-mark" aria-hidden="true">🕯️</div><div><h1>Hearthbound</h1><p class="subtitle">A spirit-keeper adventure</p></div></div>
+            <div class="chapter">Chapter 1 · The old house</div>
+        </header>
+        <div class="layout">
+            <section class="panel" aria-label="House exploration">
+                <div class="panel-heading"><h2>Grandma's House</h2><span class="badge" id="mode-badge">SAFE PLACE</span></div>
+                <div class="scene-wrap"><div class="scene" id="scene" aria-label="Top-down view of a cozy house">
+                    <span class="room-label">LIVING ROOM</span><div class="rug"></div>
+                    <div class="object bed" title="A cozy bed">🛏️</div><div class="object shelf" title="A shelf of keepsakes">📚</div><div class="object fireplace" title="A warm fireplace">🔥</div><div class="object plant" title="A leafy houseplant">🪴</div><div class="object window" title="Moonlit window"></div><div class="object door" title="The front door"></div>
+                    <div class="actor companion hidden" id="companion" aria-label="Your spirit companion"></div><div class="actor player hidden" id="player" aria-label="You"></div>
+                    <div id="game-toast" class="hidden" aria-live="polite"></div>
+                </div></div>
+                <div class="controls"><span>Move around: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or arrow keys</span><span id="position-label">Choose a spirit to begin</span></div>
+                <div class="actions" id="explore-actions"><button class="btn" id="room-button" disabled>🛏 Visit your room</button><button class="btn primary" id="battle-button" disabled>⚔ Meet a wild spirit</button></div>
+            </section>
+            <aside class="side">
+                <section class="panel spirit-card"><div class="panel-heading" style="padding:0 0 15px;border:0"><h2>Your companion</h2><span class="badge" id="dex-count">0 / 20 spirits</span></div><div id="empty-spirit" class="world-note" style="padding:0">Choose your first spirit to begin your journey. Your companion will stay by your side.</div>
+                    <div id="spirit-details" class="hidden"><div class="spirit-top"><div class="spirit-avatar" id="spirit-avatar">👻</div><div><h2 id="spirit-name">Mallow</h2><div class="spirit-type" id="spirit-type">Kindling spirit · Lv. 1</div></div></div><div class="stat"><div class="stat-row"><span>Bond</span><span id="bond-label">0 / 100</span></div><div class="meter"><span id="bond-meter"></span></div></div><div class="stat"><div class="stat-row"><span>Health</span><span id="health-label">30 / 30</span></div><div class="meter hp"><span id="health-meter"></span></div></div></div>
+                </section>
+                <section class="panel"><div class="panel-heading"><h2>A wider world awaits</h2></div><div class="world-note"><strong>For now, explore the house.</strong> Forests, caves, rivers, oceans, mountains and skylands are part of the journey ahead. There are 20 spirit kinds to discover.</div></section>
+            </aside>
+        </div>
+    </main>
+    <div class="overlay" id="starter-overlay"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="starter-title"><div class="chapter">A spirit's promise</div><h2 id="starter-title">Choose who walks beside you</h2><p>Three spirits have found their way to your home. Pick one to be your lifelong companion—care for them, grow your bond, and discover what they can become.</p><div class="starter-grid"><button class="starter" data-spirit="mallow"><span class="emoji character-slot" aria-hidden="true"></span><strong>Mallow</strong><small>A gentle wisp with a steady, protective fighting style.</small></button><button class="starter" data-spirit="cinder"><span class="emoji character-slot" aria-hidden="true"></span><strong>Cinder</strong><small>A quick ember spirit who darts in and strikes fast.</small></button><button class="starter" data-spirit="ripple"><span class="emoji character-slot" aria-hidden="true"></span><strong>Ripple</strong><small>A playful tide spirit with soothing, flowing magic.</small></button></div></section></div>
+    <div class="overlay hidden" id="room-overlay"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="room-title"><div class="chapter">A quiet place to recharge</div><h2 id="room-title">Your room</h2><p>Spend a little time with your companion in the comfort of your own room.</p><div class="room-view" aria-label="Your cozy bedroom"><span class="room-caption">YOUR BEDROOM</span><div class="room-window" aria-hidden="true"></div><div class="room-bed" aria-hidden="true"></div><div class="room-rug" aria-hidden="true"></div><span class="room-lamp" aria-hidden="true">🪔</span><div class="room-toast hidden" id="room-toast" aria-live="polite"></div><span class="room-actor room-player" id="room-player" aria-label="You"></span><span class="room-actor room-companion" id="room-companion" aria-label="Your spirit companion">👻</span></div><div class="actions" style="padding:0"><button class="btn" id="pet-button" disabled>♡ Pet your spirit</button><button class="btn" id="snack-button" disabled>✦ Give a treat</button><button class="btn primary" id="leave-room-button">Back to the house</button></div></section></div>
+    <div class="overlay hidden" id="battle-overlay"><section class="modal battle" role="dialog" aria-modal="true" aria-labelledby="battle-title"><div class="chapter">A rustle in the shadows</div><h2 id="battle-title">A wild spirit appears!</h2><div class="battle-field" id="battle-field" aria-label="Side-view real-time battle arena"><div class="battle-world" id="battle-world"><div class="attack-warning" id="attack-warning"></div><div class="enemy-projectile hidden" id="enemy-projectile" aria-hidden="true"></div><div class="battle-actor battle-player" id="battle-player" aria-label="Your character"></div><div class="battle-actor battle-companion" id="battle-companion" aria-label="Your spirit companion">👻</div><div class="battle-actor battle-enemy" id="enemy-art" aria-label="Wild spirit">🦇</div></div><div class="enemy-direction" id="enemy-direction" aria-hidden="true"></div><p class="battle-toast" id="battle-message" aria-live="polite">Move, dodge, and command your companion to attack.</p></div><div class="battle-hud"><div><div class="fighter-name" id="ally-name">Mallow</div><div class="meter hp battle-hp"><span id="ally-battle-hp"></span></div></div><div><div class="fighter-name" id="enemy-name">Gloam Bat</div><div class="meter hp battle-hp"><span id="enemy-battle-hp"></span></div></div></div><p class="battle-controls">A / D move · W jump · S crouch · Space dash · F spirit attack · E special · J weapon</p><div class="battle-actions" id="battle-actions"><button class="btn primary" id="attack-button">✨ Spirit attack</button><button class="btn" id="special-button" disabled>🌟 Special charging…</button><button class="btn" id="weapon-button">⚔ Use weapon</button><button class="btn" id="capture-button">♡ Invite it to stay</button><button class="btn" id="leave-button">Leave battle</button></div><div class="battle-actions hidden" id="battle-end-actions"><button class="btn primary" id="return-button">Back to the house</button></div></section></div>
+    <script src="script.js"></script>
+</body>
+</html>
